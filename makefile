@@ -8,6 +8,15 @@ mingw: inspire
 	make tools/windows/line.dll
 	make update
 
+macosx: inspire
+	wget http://www.lua.org/ftp/lua-5.3.5.tar.gz
+	tar -xvf lua-5.3.5.tar.gz
+	make lua "LUA_PLATFORM = macosx"
+	cp lua-5.3.5/src/lua tools/macosx/
+	cp lua-5.3.5/src/liblua.a tools/macosx/
+	make tools/macosx/line.so
+	make update
+
 inspire:
 	rm -rf inspire-complete
 	git clone git@github.com:lvzixun/inspire-complete.git
