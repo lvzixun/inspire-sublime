@@ -62,7 +62,7 @@ class InspireComplete(object):
 		lua_dir = os.path.join(work_dir, "inspire-complete")
 		lib_dir = os.path.join(work_dir, "tools", platform)
 		lua_exe = os.path.join(work_dir, "tools", platform, "lua")
-		inspire_lua =  os.path.join(work_dir, "inspire.lua")
+		inspire_lua =  os.path.join(lua_dir, "inspire.lua")
 		self._inspire_server = Popen(['lua', inspire_lua, platform, lua_dir, lib_dir], 
 			stdout=PIPE, stdin=PIPE, stderr=PIPE, 
 			startupinfo=get_startup_info(sublime.platform()))
