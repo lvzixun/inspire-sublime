@@ -1,0 +1,6 @@
+[submodule "inspire-complete"]
+	path = inspire-complete
+	url = git@github.com:lvzixun/inspire-complete.git
+[submodule "lua"]
+	path = lua
+	url = git@github.com:lua/lua.git
