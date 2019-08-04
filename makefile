@@ -12,9 +12,9 @@ macosx: inspire
 	wget http://www.lua.org/ftp/lua-5.3.5.tar.gz
 	tar -xvf lua-5.3.5.tar.gz
 	make lua "LUA_PLATFORM = macosx"
-	cp lua-5.3.5/src/lua tools/macosx/
-	cp lua-5.3.5/src/liblua.a tools/macosx/
-	make tools/macosx/line.so
+	cp lua-5.3.5/src/lua tools/osx/
+	cp lua-5.3.5/src/liblua.a tools/osx/
+	make tools/osx/line.so
 	make update
 
 inspire:
@@ -29,7 +29,7 @@ update:
 tools/windows/line.dll: inspire-complete/line.c
 	cc -g -O2 -Wall -shared -o $@ $^ -Iinspire-complete/ -Ilua-5.3.5/src -Llua-5.3.5/src -llua53
 
-tools/macosx/line.so: inspire-complete/line.c
+tools/osx/line.so: inspire-complete/line.c
 	clang -g -Wall -O2 -undefined dynamic_lookup -shared -o $@  $^ -Iinspire-complete/ -Ilua-5.3.5/src
 
 lua:
