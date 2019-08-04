@@ -1,5 +1,7 @@
 
 mingw: inspire
+	wget http://www.lua.org/ftp/lua-5.3.5.tar.gz
+	tar -xvf lua-5.3.5.tar.gz
 	make lua "LUA_PLATFORM = mingw"
 	cp lua-5.3.5/src/lua.exe tools/windows/
 	cp lua-5.3.5/src/lua53.dll tools/windows/

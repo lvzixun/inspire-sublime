@@ -59,7 +59,7 @@ class InspireComplete(object):
 	def __init__(self):
 		work_dir = os.path.dirname(os.path.realpath(__file__))
 		platform = sublime.platform()
-		lua_dir = os.path.join(work_dir, "inspire-complete")
+		lua_dir = work_dir
 		lib_dir = os.path.join(work_dir, "tools", platform)
 		lua_exe = os.path.join(work_dir, "tools", platform, "lua")
 		inspire_lua =  os.path.join(lua_dir, "inspire.lua")
