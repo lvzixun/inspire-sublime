@@ -40,7 +40,7 @@ def check_need_completion(view):
 	ct = char2type(cur_char)
 	prev_char = view.substr(point-1)
 	pt = char2type(prev_char)
-	if cur_char != '\n' and ct != pt or cur_char == 'A':
+	if cur_char != '\n' and ct != pt:
 		return True
 	else:
 		return False
@@ -63,7 +63,7 @@ class InspireComplete(object):
 		lib_dir = os.path.join(work_dir, "tools", platform)
 		lua_exe = os.path.join(work_dir, "tools", platform, "lua")
 		inspire_lua =  os.path.join(lua_dir, "inspire.lua")
-		self._inspire_server = Popen(['lua', inspire_lua, platform, lua_dir, lib_dir], 
+		self._inspire_server = Popen([lua_exe, inspire_lua, platform, lua_dir, lib_dir], 
 			stdout=PIPE, stdin=PIPE, stderr=PIPE, 
 			startupinfo=get_startup_info(sublime.platform()))
 		def check_servier():
@@ -130,7 +130,7 @@ class InspirListener(sublime_plugin.EventListener):
 			self.complete = True
 			sublime.active_window().run_command("auto_complete",{
 				'disable_auto_insert': True,
-				'api_completions_only': True,
+				'api_completions_only': False,
 				'next_competion_if_showing': False})
 			self.complete = False
 		sublime.set_timeout(hack2, 1)
@@ -142,7 +142,7 @@ class InspirListener(sublime_plugin.EventListener):
 		
 		row, col = view.rowcol(locations[0])
 		row += 1
-		flag = 0
+		flag = sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS
 		source = view.substr(sublime.Region(0, view.size()))
 		file_name = view.file_name()
 		result = self.inspire_complete.complete_at(file_name, source, row, col)
