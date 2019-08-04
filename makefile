@@ -33,4 +33,4 @@ tools/macosx/line.so: inspire-complete/line.c
 	clang -g -Wall -O2 -undefined dynamic_lookup -shared -o $@  $^ -Iinspire-complete/ -Ilua-5.3.5/src
 
 lua:
-	cd lua-5.3.5 && make mingw $(LUA_PLATFORM)
+	cd lua-5.3.5 && make $(LUA_PLATFORM)
