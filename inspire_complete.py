@@ -7,23 +7,14 @@ import sublime, sublime_plugin
 from subprocess import Popen, PIPE, STDOUT
 import subprocess
 
-cmask = [
-	'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'S', 'S', 'U', 'U', 'S', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U',
-    'S', 'L', 'C', 'F', 'F', 'F', 'L', 'C', 'U', 'U', 'F', 'F', 'F', 'F', 'F', 'F', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'F', 'F', 'L', 'L', 'L', 'L',
-    'L', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'F', 'F', 'F', 'U', 'A',
-    'U', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'F', 'L', 'F', 'L', 'U',
-    'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U',
-    'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U',
-    'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U',
-    'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U',
-]
 
 def char2type(char):
-	code = int(bytes(char, 'utf-8')[0])
-	if code < 0 or code >= len(cmask):
-		return 'U'
+	if re.match(r'^[a-zA-Z_]+$', char):
+		return 'A'
+	elif re.match(r'\s+$', char):
+		return 'S'
 	else:
-		return cmask[code]
+		return 'U'
 
 
 def check_need_completion(view):
@@ -40,7 +31,7 @@ def check_need_completion(view):
 	ct = char2type(cur_char)
 	prev_char = view.substr(point-1)
 	pt = char2type(prev_char)
-	if cur_char != '\n' and ct != pt:
+	if cur_char != '\n' and ct != pt and ct != 'U':
 		return True
 	else:
 		return False
