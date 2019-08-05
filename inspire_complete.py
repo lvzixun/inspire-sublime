@@ -85,8 +85,8 @@ class InspireComplete(object):
 		self._inspire_server.stdin.flush()
 
 	def _write_data(self, data):
-		size = len(data)
 		data = bytes(data, 'utf-8')
+		size = len(data)
 		s = "%d\n" % (size)
 		sz = bytes(s, 'UTF-8')
 		self._inspire_server.stdin.write(sz)
