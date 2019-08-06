@@ -109,6 +109,8 @@ class InspirListener(sublime_plugin.EventListener):
 	def __init__(self):
 		self.inspire_complete = InspireComplete()
 		self.complete = False
+		self.do_complete_thread = False
+		self.complete_result = False
 
 
 	def on_modified(self, view):
@@ -116,34 +118,54 @@ class InspirListener(sublime_plugin.EventListener):
 		if b:
 			self.per_complete()
 
+	def show_complete(self):
+		self.complete = True
+		sublime.active_window().run_command("auto_complete",
+		{
+			'disable_auto_insert': True,
+			'api_completions_only': False,
+			'next_competion_if_showing': False
+		})
+		self.complete = False
+
 
 	def per_complete(self):
 		sublime.active_window().run_command("hide_auto_complete")
-		def hack2():
-			self.complete = True
-			sublime.active_window().run_command("auto_complete",{
-				'disable_auto_insert': True,
-				'api_completions_only': False,
-				'next_competion_if_showing': False})
-			self.complete = False
-		sublime.set_timeout(hack2, 1)
+		sublime.set_timeout(lambda :self.show_complete(), 0)
 
 
 	def on_query_completions(self, view, prefix, locations):
 		if not self.complete:
-			return
+			return None
 		
-		row, col = view.rowcol(locations[0])
-		row += 1
-		flag = sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS
-		source = view.substr(sublime.Region(0, view.size()))
-		file_name = view.file_name()
-		result = self.inspire_complete.complete_at(file_name, source, row, col)
-		# print("prefix", prefix, locations)
-		print(result)
+		thread_prepare = not self.do_complete_thread or not self.do_complete_thread.is_alive()
+		if not thread_prepare:
+			print("inspire complete busy.")
+			return ([], flag)
 
-		ret = []
-		for v in result:
-			entry = ("%s\tinspire"%(v), v)
-			ret.append(entry)
-		return (ret, flag)
+		if self.complete_result:
+			ret = self.complete_result
+			self.complete_result = False
+			return ret
+
+		flag = sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS
+		def do_complete():
+			row, col = view.rowcol(locations[0])
+			row += 1
+			source = view.substr(sublime.Region(0, view.size()))
+			file_name = view.file_name()
+			result = self.inspire_complete.complete_at(file_name, source, row, col)
+			# print("prefix", prefix, locations)
+			print(result) 
+
+			if len(result)>0:
+				ret = []
+				for v in result:
+					entry = ("%s\tinspire"%(v), v)
+					ret.append(entry)
+				self.complete_result = (ret, flag)
+				self.per_complete()
+			
+		self.do_complete_thread = threading.Thread(target=do_complete)
+		self.do_complete_thread.start()
+		return ([], flag)
