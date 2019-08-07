@@ -137,7 +137,8 @@ class InspirListener(sublime_plugin.EventListener):
 	def on_query_completions(self, view, prefix, locations):
 		if not self.complete:
 			return None
-		
+			
+		flag = sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS		
 		thread_prepare = not self.do_complete_thread or not self.do_complete_thread.is_alive()
 		if not thread_prepare:
 			print("inspire complete busy.")
@@ -148,7 +149,6 @@ class InspirListener(sublime_plugin.EventListener):
 			self.complete_result = False
 			return ret
 
-		flag = sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS
 		def do_complete():
 			row, col = view.rowcol(locations[0])
 			row += 1
