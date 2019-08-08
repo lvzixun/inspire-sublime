@@ -17,25 +17,6 @@ def char2type(char):
 		return 'U'
 
 
-def check_need_completion(view):
-	file_name = view.file_name()
-	suffix = file_name and file_name.split(".")[-1]
-	if not suffix or suffix == "" or suffix == "log":
-		return False
-
-	point = view.sel()[0].begin() - 1
-	if point < 0:
-		return False
-
-	cur_char = view.substr(point)
-	ct = char2type(cur_char)
-	prev_char = view.substr(point-1)
-	pt = char2type(prev_char)
-	if cur_char != '\n' and ct != pt and ct != 'U':
-		return True
-	else:
-		return False
-
 
 def get_startup_info(platform):
 	if platform == "windows":
@@ -111,10 +92,53 @@ class InspirListener(sublime_plugin.EventListener):
 		self.complete = False
 		self.do_complete_thread = False
 		self.complete_result = False
+		self.last_modify_file = False
+		self.last_modify_point = False
+		self.last_modify_line = False
 
+
+	def check_need_completion(self, view):
+		file_name = view.file_name()
+		suffix = file_name and file_name.split(".")[-1]
+		if not suffix or suffix == "" or suffix == "log":
+			return False
+
+		point = view.sel()[0].begin() - 1
+		b = True
+		cur_line = view.substr(view.line(point))
+		if file_name == self.last_modify_file:
+			if self.last_modify_point == point:
+				b = False
+			else:
+				rcl = cur_line[::-1]
+				rll = self.last_modify_line[::-1]
+				s1 = rcl
+				s2 = rll
+				if len(s1) < len(s2):
+					s1 = rll
+					s2 = rcl
+				if s1.find(s2) == 0:
+					b = False
+
+		self.last_modify_file = file_name
+		self.last_modify_point = point
+		self.last_modify_line = cur_line
+
+		if point < 0 or not b:
+			return False
+
+		cur_char = view.substr(point)
+		ct = char2type(cur_char)
+		prev_char = view.substr(point-1)
+		pt = char2type(prev_char)
+		# print("cur_char", cur_char)
+		if cur_char != '\n' and ct != pt and ct != 'U':
+			return True
+		else:
+			return False
 
 	def on_modified(self, view):
-		b = check_need_completion(view)
+		b = self.check_need_completion(view)
 		if b:
 			self.per_complete()
 
