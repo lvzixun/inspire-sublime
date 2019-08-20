@@ -117,7 +117,7 @@ class InspirListener(sublime_plugin.EventListener):
 				if len(s1) < len(s2):
 					s1 = rll
 					s2 = rcl
-				if s1.find(s2) == 0:
+				if len(s2)>0 and s1.find(s2) == 0:
 					b = False
 
 		self.last_modify_file = file_name
